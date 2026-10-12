@@ -1,3 +1,28 @@
+function renderImages(target, files) {
+  console.log(files);
+  target.textContent = '';
+  (async () => {
+    const imageElements = await Promise.all(
+      Array.from(files).map(
+        (file) =>
+          new Promise((resolve) => {
+            const image = document.createElement('img');
+            const fileReader = new FileReader();
+            fileReader.addEventListener('load', () => {
+              image.src = fileReader.result;
+              resolve(image);
+            });
+            fileReader.readAsDataURL(file);
+          }),
+      ),
+    );
+    console.log(imageElements);
+    imageElements.forEach((imageElement) => {
+      target.appendChild(imageElement);
+    });
+  })();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const textInput = document.querySelector('#textInput');
 
@@ -5,27 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileInput = document.querySelector('#fileInput');
   fileInput.addEventListener('change', (event) => {
     console.log(event.target.files);
-    imageArea.textContent = '';
-    (async () => {
-      const imageElements = await Promise.all(
-        Array.from(event.target.files).map(
-          (file) =>
-            new Promise((resolve) => {
-              const image = document.createElement('img');
-              const fileReader = new FileReader();
-              fileReader.addEventListener('load', () => {
-                image.src = fileReader.result;
-                resolve(image);
-              });
-              fileReader.readAsDataURL(file);
-            }),
-        ),
-      );
-      console.log(imageElements);
-      imageElements.forEach((imageElement) => {
-        imageArea.appendChild(imageElement);
-      });
-    })();
+    renderImages(imageArea, event.target.files);
   });
 
   // 우선 indexedDB를 연결한다.
@@ -86,9 +91,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const loadFromIndexedDBButton = document.querySelector('#loadFromIndexedDB');
   loadFromIndexedDBButton.addEventListener('click', () => {
-    /**
-     * @todo
-     * indexedDB로부터 불러오기
-     */
+    console.log('loading...');
+    const objectStore = database
+      ?.transaction('koishiStore', 'readwrite')
+      .objectStore('koishiStore');
+
+    if (!objectStore) {
+      console.log('오브젝트 스토어가 존재하지 않습니다.');
+      return;
+    }
+
+    const getRequest = objectStore.get('backup');
+    getRequest.onsuccess = (event) => {
+      console.log(event.target.result);
+      if (!event.target.result) {
+        console.log('backup 존재하지 않음.');
+        return;
+      } else {
+        console.log('backup 존재함. 불러오는 중.');
+        textInput.value = event.target.result.text;
+        fileInput.files = event.target.result.files;
+        renderImages(imageArea, event.target.result.files);
+      }
+    };
   });
 });
