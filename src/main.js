@@ -28,11 +28,22 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
   });
 
+  // 우선 indexedDB를 연결한다.
+  let database = null;
+  const indexedDBRequest = indexedDB.open('koishiDB');
+  indexedDBRequest.onerror = (event) => {
+    alert(`IndexedDB 시작 실패 (${event.target.errorCode})`);
+  };
+  indexedDBRequest.onsuccess = () => {
+    database = indexedDBRequest.result;
+    console.log('koishiDB 연결 완료.');
+  };
+
   const saveToIndexedDBButton = document.querySelector('#saveToIndexedDB');
   saveToIndexedDBButton.addEventListener('click', () => {
     /**
      * @todo
-     * indexDB에 저장하기
+     * indexedDB에 저장하기
      */
   });
 
@@ -40,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFromIndexedDBButton.addEventListener('click', () => {
     /**
      * @todo
-     * indexDB로부터 불러오기
+     * indexedDB로부터 불러오기
      */
   });
 });
