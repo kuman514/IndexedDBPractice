@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFromIndexedDBButton.addEventListener('click', () => {
     console.log('loading...');
     const objectStore = database
-      ?.transaction('koishiStore', 'readwrite')
+      ?.transaction('koishiStore', 'readonly')
       .objectStore('koishiStore');
 
     if (!objectStore) {
