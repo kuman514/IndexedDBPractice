@@ -6,6 +6,20 @@
     <title>IndexedDBPractice</title>
   </head>
   <body>
+    <p>
+      <label for="textInput">텍스트 인풋</label>
+      <input id="textInput" type="text" />
+    </p>
+    <p>
+      <label for="fileInput">파일 인풋</label>
+      <input id="fileInput" type="file" multiple accept="image/jpeg" />
+    </p>
+    <p>
+      <button id="saveToIndexedDB">저장하기</button>
+      <button id="loadFromIndexedDB">불러오기</button>
+    </p>
+    <h1>등록된 이미지</h1>
+    <section id="images"></section>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
